@@ -37,7 +37,7 @@ public struct ClipboardEntry: Codable, Identifiable, Hashable, Sendable {
     public let searchableText: String
     public let sourceApplicationName: String?
     public let sourceBundleIdentifier: String?
-    public let contentHash: String
+    public var contentHash: String
     public let byteCount: Int
     public var isPinned: Bool
     public let thumbnailRelativePath: String?

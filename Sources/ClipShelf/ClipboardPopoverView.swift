@@ -161,7 +161,7 @@ struct ClipboardPopoverView: View {
 
     private var historySummary: String {
         let count = model.entries.count
-        return count == 1 ? "1 item" : "\(count) items"
+        return (count == 1 ? "1 item" : "\(count) items") + " · kept 30 days"
     }
 }
 

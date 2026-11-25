@@ -18,10 +18,15 @@ final class AppModel: ObservableObject {
         self?.capture(from: pasteboard, sourceApplication: application)
     }
     private let thumbnailCache = NSCache<NSUUID, NSImage>()
+    private var expiryTask: Task<Void, Never>?
 
     init(store: HistoryStore = HistoryStore()) {
         self.store = store
         thumbnailCache.countLimit = 60
+    }
+
+    var canPin: Bool {
+        entries.filter(\.isPinned).count < HistoryStore.defaultMaxPinned
     }
 
     var filteredEntries: [ClipboardEntry] {
@@ -43,10 +48,21 @@ final class AppModel: ObservableObject {
                 show(error, title: "Couldn’t load clipboard history")
             }
         }
+        expiryTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60 * 60))
+                guard let self, !Task.isCancelled else { return }
+                if let entries = try? await self.store.removeExpired() {
+                    self.entries = entries
+                }
+            }
+        }
     }
 
     func stop() {
         monitor.stop()
+        expiryTask?.cancel()
+        expiryTask = nil
     }
 
     func togglePaused() {
@@ -65,6 +81,9 @@ final class AppModel: ObservableObject {
                 let changeCount = try ClipboardRestorer.restore(items)
                 monitor.ignore(changeCount: changeCount)
                 activeEntryID = entry.id
+                if let updated = try? await store.markUsed(id: entry.id) {
+                    entries = updated
+                }
                 onRestoreCompleted?()
             } catch {
                 show(error, title: "Couldn’t restore clipboard item")

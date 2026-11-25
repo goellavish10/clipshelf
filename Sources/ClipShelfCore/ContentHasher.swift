@@ -2,6 +2,21 @@ import CryptoKit
 import Foundation
 
 public enum ContentHasher {
+    private static let identityTypes: Set<String> = ["public.utf8-plain-text", "public.file-url"]
+
+    /// Apps attach different HTML/RTF to the same text, so duplicates are matched on plain text and file URLs.
+    public static func identity(items: [CapturedClipboardItem]) -> String {
+        let keyItems = items.map { item in
+            CapturedClipboardItem(
+                representations: item.representations.filter { identityTypes.contains($0.typeIdentifier) }
+            )
+        }
+        guard keyItems.contains(where: { !$0.representations.isEmpty }) else {
+            return hash(items: items)
+        }
+        return hash(items: keyItems)
+    }
+
     public static func hash(items: [CapturedClipboardItem]) -> String {
         var hasher = SHA256()
 

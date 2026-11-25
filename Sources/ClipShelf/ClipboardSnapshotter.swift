@@ -108,7 +108,7 @@ enum ClipboardSnapshotter {
         let searchableParts = plainTexts + webURLs + fileNames + [sourceApplication?.localizedName ?? ""]
         let searchableText = searchableParts.joined(separator: "\n")
         let thumbnail = firstImageData.flatMap(makeThumbnail(from:))
-        let contentHash = ContentHasher.hash(items: capturedItems)
+        let contentHash = ContentHasher.identity(items: capturedItems)
 
         return CapturedClipboardEntry(
             kind: kind,

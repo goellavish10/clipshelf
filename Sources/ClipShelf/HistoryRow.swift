@@ -65,8 +65,15 @@ struct HistoryRow: View {
         .disabled(isDisabled)
         .onHover { isHovered = $0 }
         .contextMenu {
-            Button(entry.isPinned ? "Unpin" : "Pin") {
-                model.togglePinned(entry)
+            if entry.isPinned {
+                Button("Unpin") {
+                    model.togglePinned(entry)
+                }
+            } else {
+                Button(model.canPin ? "Pin to Top" : "Pin to Top (\(HistoryStore.defaultMaxPinned) max)") {
+                    model.togglePinned(entry)
+                }
+                .disabled(!model.canPin)
             }
             Divider()
             Button("Delete", role: .destructive) {

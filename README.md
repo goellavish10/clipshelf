@@ -26,7 +26,9 @@ You can also open `Package.swift` in Xcode and run the `ClipShelf` executable ta
 3. Open the clipboard icon and choose a history entry.
 4. Press `⌘V` in the destination app.
 
-Right-click a history row to pin or delete it. Pinned entries are kept when clearing history.
+Copying something that is already in the history moves it back to the top instead of adding a duplicate. Text is matched on its plain-text content, so the same text copied from different apps counts as one entry.
+
+Right-click a history row to pin it to the top or delete it. Up to 3 entries can be pinned. Pinned entries are kept when clearing history and never expire.
 
 ## Local data
 
@@ -36,7 +38,7 @@ History is stored in:
 ~/Library/Application Support/ClipShelf
 ```
 
-ClipShelf keeps up to 200 unpinned entries and 300 MB of clipboard payloads. Old unpinned entries are removed automatically.
+History survives restarts. Unpinned entries are deleted, along with their stored payloads, 30 days after they were last copied or used. As a disk safeguard, the oldest unpinned entries are also removed if payloads exceed 1 GB.
 
 ## Development
 
