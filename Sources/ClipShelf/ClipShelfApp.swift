@@ -55,6 +55,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         model.stop()
     }
 
+    // SwiftUI otherwise answers a relaunch by showing the empty Settings scene.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        false
+    }
+
     @objc private func togglePopover(_ sender: Any?) {
         if popover.isShown {
             popover.performClose(sender)
