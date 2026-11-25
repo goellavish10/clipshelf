@@ -29,11 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
-            button.image = NSImage(
-                systemSymbolName: "clipboard",
-                accessibilityDescription: "ClipShelf clipboard history"
-            )
-            button.image?.isTemplate = true
+            button.image = menuBarIcon()
             button.toolTip = "ClipShelf"
             button.target = self
             button.action = #selector(togglePopover(_:))
@@ -68,6 +64,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // SwiftUI otherwise answers a relaunch by showing the empty Settings scene.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         false
+    }
+
+    // AppIcon.icns only exists in the app bundle, so `swift run` falls back to the SF symbol.
+    private func menuBarIcon() -> NSImage? {
+        if let icon = NSImage(named: "AppIcon")?.copy() as? NSImage {
+            icon.size = NSSize(width: 20, height: 20)
+            icon.accessibilityDescription = "ClipShelf clipboard history"
+            return icon
+        }
+        let symbol = NSImage(systemSymbolName: "clipboard", accessibilityDescription: "ClipShelf clipboard history")
+        symbol?.isTemplate = true
+        return symbol
     }
 
     @objc private func togglePopover(_ sender: Any?) {
