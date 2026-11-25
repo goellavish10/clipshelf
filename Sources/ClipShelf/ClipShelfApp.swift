@@ -14,9 +14,10 @@ struct ClipShelfApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem?
     private let popover = NSPopover()
+    private var outsideClickMonitor: Any?
     private let model = AppModel()
     private weak var previouslyActiveApplication: NSRunningApplication?
 
@@ -37,6 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.statusItem = statusItem
 
         popover.behavior = .transient
+        popover.delegate = self
         popover.animates = true
         popover.contentSize = NSSize(width: 420, height: 560)
         popover.contentViewController = NSHostingController(
@@ -63,6 +65,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         previouslyActiveApplication = NSWorkspace.shared.frontmostApplication
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         popover.contentViewController?.view.window?.makeKey()
+
+        // .transient misses clicks in other apps because we never become the active app.
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.popover.performClose(nil)
+            }
+        }
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        if let outsideClickMonitor {
+            NSEvent.removeMonitor(outsideClickMonitor)
+            self.outsideClickMonitor = nil
+        }
     }
 
     private func finishSelection() {
