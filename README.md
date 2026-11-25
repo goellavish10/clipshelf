@@ -1,3 +1,5 @@
+<img src="Resources/AppIcon.png" width="128" alt="ClipShelf icon">
+
 # ClipShelf
 
 ClipShelf is a small, local-only macOS clipboard history app. It lives in the menu bar, records text, rich text, links, images, and Finder file references, and restores any entry to the system clipboard for the next normal `⌘V`.
@@ -47,3 +49,5 @@ make build
 make test
 make app
 ```
+
+The app icon is drawn by `scripts/make-icon.swift`. After editing it, run `make icon` to regenerate `Resources/AppIcon.icns` and the README image `Resources/AppIcon.png`.

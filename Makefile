@@ -1,4 +1,4 @@
-.PHONY: build test app run clean
+.PHONY: build test app icon run clean
 
 APP_NAME := ClipShelf
 BUILD_DIR := $(CURDIR)/build
@@ -19,7 +19,11 @@ app:
 	mkdir -p "$(APP_BUNDLE)/Contents/Resources"
 	cp "$(RELEASE_BINARY)" "$(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)"
 	cp "$(CURDIR)/Resources/Info.plist" "$(APP_BUNDLE)/Contents/Info.plist"
+	cp "$(CURDIR)/Resources/AppIcon.icns" "$(APP_BUNDLE)/Contents/Resources/AppIcon.icns"
 	codesign --force --deep --sign - "$(APP_BUNDLE)"
+
+icon:
+	$(SWIFT_ENV) swift scripts/make-icon.swift "$(CURDIR)/Resources/AppIcon.icns" "$(CURDIR)/Resources/AppIcon.png"
 
 run: app
 	open "$(APP_BUNDLE)"
