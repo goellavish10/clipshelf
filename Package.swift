@@ -23,6 +23,7 @@ let package = Package(
             dependencies: ["ClipShelfCore"],
             linkerSettings: [
                 .linkedFramework("AppKit"),
+                .linkedFramework("Carbon"),
                 .linkedFramework("SwiftUI"),
                 .linkedFramework("UniformTypeIdentifiers")
             ]

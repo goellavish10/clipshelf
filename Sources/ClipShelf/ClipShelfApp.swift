@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import SwiftUI
 
 @main
@@ -19,6 +20,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private let popover = NSPopover()
     private var outsideClickMonitor: Any?
     private let model = AppModel()
+    private lazy var quickPaste = QuickPasteController(model: model)
+    private var quickPasteHotKey: HotKey?
     private weak var previouslyActiveApplication: NSRunningApplication?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -49,6 +52,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             self?.finishSelection()
         }
         model.start()
+
+        quickPasteHotKey = HotKey(keyCode: kVK_ANSI_V, modifiers: controlKey | optionKey) { [weak self] in
+            self?.toggleQuickPaste()
+        }
+        if quickPasteHotKey == nil {
+            NSLog("ClipShelf: couldn’t register ⌃⌥V; another app may already use it")
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -79,6 +89,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 self?.popover.performClose(nil)
             }
         }
+    }
+
+    private func toggleQuickPaste() {
+        if popover.isShown {
+            popover.performClose(nil)
+        }
+        quickPaste.toggle()
     }
 
     func popoverDidClose(_ notification: Notification) {

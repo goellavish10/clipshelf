@@ -30,6 +30,12 @@ Copying something that is already in the history moves it back to the top instea
 
 Right-click a history row to pin it to the top or delete it. Up to 3 entries can be pinned. Pinned entries are kept when clearing history and never expire.
 
+### Quick paste
+
+Press `⌃⌥V` (Control-Option-V) in any app to open a small list next to your text cursor. It shows your most recently used pinned entry and your two most recent copies, or your three most recent copies if nothing is pinned. Press `1`, `2` or `3`, or use the arrow keys and `Return`, and ClipShelf pastes that entry where you were typing. `Esc` closes the list.
+
+Placing the list at the cursor and pasting for you need Accessibility access: System Settings → Privacy & Security → Accessibility → ClipShelf. Without it, the list opens at the mouse pointer and the chosen entry is only put on the clipboard. Apps that don't report their text cursor (some browsers and Electron apps) also get the list at the mouse pointer. Because `make app` signs the app ad hoc, macOS may forget this permission after a rebuild; toggle ClipShelf off and on again in that list.
+
 ## Local data
 
 History is stored in:

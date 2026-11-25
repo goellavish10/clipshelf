@@ -128,7 +128,7 @@ struct HistoryRow: View {
     }
 }
 
-private extension ClipboardKind {
+extension ClipboardKind {
     var systemImage: String {
         switch self {
         case .text: "text.alignleft"

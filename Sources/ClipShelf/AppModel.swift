@@ -29,6 +29,10 @@ final class AppModel: ObservableObject {
         entries.filter(\.isPinned).count < HistoryStore.defaultMaxPinned
     }
 
+    var quickPasteEntries: [ClipboardEntry] {
+        QuickPasteSelection.entries(from: entries)
+    }
+
     var filteredEntries: [ClipboardEntry] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return entries }
@@ -70,7 +74,7 @@ final class AppModel: ObservableObject {
         monitor.setPaused(isPaused)
     }
 
-    func restore(_ entry: ClipboardEntry) {
+    func restore(_ entry: ClipboardEntry, completion: (() -> Void)? = nil) {
         guard !isRestoring else { return }
         isRestoring = true
 
@@ -84,7 +88,11 @@ final class AppModel: ObservableObject {
                 if let updated = try? await store.markUsed(id: entry.id) {
                     entries = updated
                 }
-                onRestoreCompleted?()
+                if let completion {
+                    completion()
+                } else {
+                    onRestoreCompleted?()
+                }
             } catch {
                 show(error, title: "Couldn’t restore clipboard item")
             }
